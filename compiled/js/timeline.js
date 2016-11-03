@@ -10663,6 +10663,11 @@ TL.TimeNav = TL.Class.extend({
 
 		this._calculated_row_height = this._calculateRowHeight(available_height);
 
+        //ELMAC
+        var groups = [];
+        var groupsRowsIndexes = [];
+        //END ELMAC
+
 		for (var i = 0; i < this._markers.length; i++) {
 
 			// Set Height
@@ -10670,6 +10675,20 @@ TL.TimeNav = TL.Class.extend({
 
 			//Position by Row
 			var row = this.timescale.getPositionInfo(i).row;
+			
+			//ELMAC
+			if(groups.indexOf(this._markers[i].data.group)===-1){
+			  groups.push(this._markers[i].data.group);
+			}
+			var groupIndex = groups.indexOf(this._markers[i].data.group);
+			if(!groupsRowsIndexes[groupIndex]){
+			  groupsRowsIndexes[groupIndex] = [];
+			}
+
+			if(groupsRowsIndexes[groupIndex].indexOf(row)===-1){
+			  groupsRowsIndexes[groupIndex].push(row);
+			}
+			//END ELMAC
 
 			var marker_y = Math.floor(row * (marker_height + this.options.marker_padding)) + this.options.marker_padding;
 
@@ -10677,6 +10696,11 @@ TL.TimeNav = TL.Class.extend({
 			this._markers[i].setRowPosition(marker_y, remainder_height);
 		};
 
+        //ELMAC: we update rows in group object, with newly calculated value
+        for(var i = 0; i< this._groups.length; i++){
+          this._groups[i].data.rows = groupsRowsIndexes[groups.indexOf(this._groups[i].data.label)].length;
+        };
+        //END ELMAC
 	},
 
 	_resetMarkersActive: function() {
